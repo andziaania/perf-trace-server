@@ -1,5 +1,6 @@
 package com.pawelczyk.perftraceserver.controller;
 
+import com.pawelczyk.perftraceserver.repository.WebappRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,12 +39,16 @@ public class WebappControllerTest {
   @Autowired
   private WebApplicationContext webApplicationContext;
 
+  @Autowired
+  private WebappRepository webappRepository;
+
   @Before
   public void setup() {
     this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    webappRepository.deleteAll();
   }
 
-    @Test
+  @Test
   public void getWebapps_withNoWebappsAdded_returnsEmptyOk() throws Exception {
     this.mockMvc.perform(get("/webapps"))
             .andExpect(status().isOk())
@@ -70,7 +75,7 @@ public class WebappControllerTest {
   }
 
   @Test
-  public void addWebapp_WithIncorrectParameter_returnsHttpUNPROCESSABLE_ENTITY() throws Exception {
+  public void addWebapp_withIncorrectParameter_returnsHttpUNPROCESSABLE_ENTITY() throws Exception {
     String webappJson = "{\"incorectParameter\":\"hejho\"}";
     this.mockMvc.perform(post("/webapps")
             .contentType(CONTENT_TYPE)
@@ -79,7 +84,7 @@ public class WebappControllerTest {
   }
 
   @Test
-  public void addWebappWithEmptyUrlParameter_returnsHttpUNPROCESSABLE_ENTITY() throws Exception {
+  public void addWebapp_withEmptyUrlParameter_returnsHttpUNPROCESSABLE_ENTITY() throws Exception {
     String webappJson = "{\"url\":\"\"}";
     this.mockMvc.perform(post("/webapps")
             .contentType(CONTENT_TYPE)
