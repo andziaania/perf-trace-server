@@ -4,6 +4,7 @@ import com.pawelczyk.perftraceserver.controller.exception.WrongParameterExceptio
 import com.pawelczyk.perftraceserver.model.Webapp;
 import com.pawelczyk.perftraceserver.repository.WebappRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +17,7 @@ import java.util.List;
  * @author ania.pawelczyk
  * @since 06.09.2019.
  */
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 public class WebappController {
   private WebappRepository webappRepository;
@@ -37,4 +39,5 @@ public class WebappController {
   public List<Webapp> getWebapps() {
     return webappRepository.findAll();
   }
+
 }
