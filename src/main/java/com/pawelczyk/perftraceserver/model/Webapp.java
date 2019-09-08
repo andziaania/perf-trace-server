@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class Webapp {
   @Id
   @GeneratedValue
-  private Long id;
+  private long id;
 
   @Column(unique = true)
   private String url;
@@ -30,7 +30,7 @@ public class Webapp {
     this.url = url;
   }
 
-  public Long getId() {
+  public long getId() {
     return id;
   }
 
@@ -39,7 +39,7 @@ public class Webapp {
     if (!this.getClass().equals(other.getClass())) return false;
     Webapp otherWebapp = (Webapp) other;
     return this.url.equals(otherWebapp.url)
-            && this.id.equals(otherWebapp.id);
+            && this.id == otherWebapp.id;
   }
 
   public String getUrl() {
