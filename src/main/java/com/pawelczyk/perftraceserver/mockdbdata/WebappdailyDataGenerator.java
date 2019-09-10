@@ -5,6 +5,7 @@ import com.pawelczyk.perftraceserver.repository.WebappDailyRepository;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -37,12 +38,12 @@ public class WebappdailyDataGenerator {
     for (int i = 0; i < DAYS; i++) {
 
       LocalDate date = today.minusDays(i);
+      long timestamp = Timestamp.valueOf(date.atStartOfDay()).getTime();
 
       List<Long> hours =  Arrays.stream(new Long[24])
               .map(zero -> (long) (Math.random() * MAX_USERS_NUMBER))
               .collect(Collectors.toList());
-
-      WebappDaily webappDaily = new WebappDaily(date, hours);
+      WebappDaily webappDaily = new WebappDaily(timestamp, hours);
       webappDailyRepository.save(webappDaily);
     }
   }

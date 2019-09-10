@@ -1,6 +1,6 @@
 package com.pawelczyk.perftraceserver.repository;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -31,12 +31,13 @@ public class WebappDailyRepositoryTest {
   @Autowired
   private WebappDailyRepository webappDailyRepository;
 
+  private final Long anyTimestamp = new Timestamp(System.currentTimeMillis()).getTime();
+
   @Test
   public void persist() {
-    LocalDate today = LocalDate.now();
     List<Long> hours = Arrays.asList(1L,2L,3L,4L,5L,6L,7L,8L,8L,10L,1L,2L,3L,4L,5L,6L,7L,8L,8L,20L,21L,22L,23L,24L);
 
-    WebappDaily webappDaily = new WebappDaily(today, hours);
+    WebappDaily webappDaily = new WebappDaily(anyTimestamp, hours);
     entityManager.persist(webappDaily);
 
     WebappDaily webappDailyFromDB = webappDailyRepository.findAll().get(0);
@@ -48,7 +49,7 @@ public class WebappDailyRepositoryTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void persist_whenHoursListIsNull_IllegalArgumentExceptio() {
-    WebappDaily webappDaily = new WebappDaily(LocalDate.now(), null);
+    WebappDaily webappDaily = new WebappDaily(anyTimestamp, null);
     entityManager.persist(webappDaily);
   }
 }
