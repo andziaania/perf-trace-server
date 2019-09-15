@@ -17,6 +17,6 @@ public class TimestampToDateConverter implements AttributeConverter<Long, Date> 
 
   @Override
   public Long convertToEntityAttribute(Date date) {
-    return Timestamp.valueOf(date. toLocalDate().atStartOfDay()).getTime();
+    return Timestamp.valueOf(date.toLocalDate().atStartOfDay()).getTime();
   }
 }

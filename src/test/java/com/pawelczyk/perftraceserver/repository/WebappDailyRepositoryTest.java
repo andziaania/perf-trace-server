@@ -3,6 +3,8 @@ package com.pawelczyk.perftraceserver.repository;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,7 +13,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import com.pawelczyk.perftraceserver.model.WebappDaily;
@@ -51,5 +53,28 @@ public class WebappDailyRepositoryTest {
   public void persist_whenHoursListIsNull_IllegalArgumentExceptio() {
     WebappDaily webappDaily = new WebappDaily(anyTimestamp, null);
     entityManager.persist(webappDaily);
+  }
+
+
+  @Test
+  public void saveAndGetWebappDaily_returnsCorrectAddedEntityProperties() {
+    Long timestamp = 1568066400000L; // 2019-09-10
+
+    // save
+    WebappDaily webappDaily = createEntity(timestamp);
+    webappDailyRepository.save(webappDaily);
+
+    // read
+    Optional<WebappDaily> byTimestampOpt = webappDailyRepository.findByTimestamp(timestamp);
+
+    assertTrue(byTimestampOpt.isPresent());
+//    assertEquals(byTimestampOpt.get().timestamp, timestamp);
+  }
+
+  private WebappDaily createEntity(Long timestamp) {
+    List<Long> hours =  Arrays.stream(new Long[24])
+            .map(zero -> (long) (Math.random() * 1000))
+            .collect(Collectors.toList());
+    return new WebappDaily(timestamp, hours);
   }
 }

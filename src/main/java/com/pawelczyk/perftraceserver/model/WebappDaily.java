@@ -25,7 +25,9 @@ public class WebappDaily {
   private Webapp webapp;
 
   @Convert(converter = TimestampToDateConverter.class)
-  private Long timestamp;
+  private Long date;
+
+  protected Long timestamp;
 
   private long usersNumber;
 
@@ -36,6 +38,7 @@ public class WebappDaily {
 
   public WebappDaily(Long timestamp, @NotNull List<Long> usersNumberHourly) {
     this.timestamp = timestamp;
+    this.date = timestamp;
     this.usersNumberHourly = usersNumberHourly;
     setUsersNumber(usersNumberHourly);
   }

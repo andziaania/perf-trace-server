@@ -1,6 +1,5 @@
 package com.pawelczyk.perftraceserver.controller;
 
-import com.pawelczyk.perftraceserver.controller.exception.ResultsNotFound;
 import com.pawelczyk.perftraceserver.model.WebappDaily;
 import com.pawelczyk.perftraceserver.repository.WebappDailyRepository;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -8,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +29,7 @@ public class WebappDailyController {
   public List<Long> getTotalWabappUsersHourly(@PathVariable("timestamp") Long timestamp) {
     final Optional<WebappDaily> webappDailyOpt = webappDailyRepository.findByTimestamp(timestamp);
     if (!webappDailyOpt.isPresent()) {
-      throw new ResultsNotFound("Can't find results for webapp in timestamp: " + timestamp);
+      return Collections.nCopies(24, 0L);
     }
     return webappDailyOpt.get().getUsersNumberHourly();
   }
