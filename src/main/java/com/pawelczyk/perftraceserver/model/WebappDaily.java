@@ -57,4 +57,8 @@ public class WebappDaily {
   public long getUsersNumber() {
     return usersNumber;
   }
+
+  public Long getTimestamp() {
+    return timestamp;
+  }
 }
