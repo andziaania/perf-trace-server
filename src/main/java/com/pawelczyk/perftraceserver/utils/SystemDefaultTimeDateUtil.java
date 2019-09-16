@@ -51,6 +51,12 @@ public class SystemDefaultTimeDateUtil {
     return getStartOfDayTimestamp(monday);
   }
 
+  public Long getMonthEndTimestamp(Long timestamp) {
+    LocalDate date = getDate(timestamp);
+    LocalDate lastMonthDay = date.with(TemporalAdjusters.lastDayOfMonth());
+    return getStartOfDayTimestamp(lastMonthDay);
+  }
+
   public int getNumberOfDaysInMonth(Long timestamp) {
     LocalDate date = getDate(timestamp);
     return date.lengthOfMonth();

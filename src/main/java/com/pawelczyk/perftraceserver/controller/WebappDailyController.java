@@ -50,6 +50,15 @@ public class WebappDailyController {
     return getEveryDayUsersCount(webappDailyPeriod, timestampWeekStart, timestampWeekEnd);
   }
 
+  @GetMapping("/api/users/total/month/{timestamp}")
+  public List<Long> getTotalWabappUsersMonthly(@PathVariable("timestamp") Long timestamp) {
+    final Long timestampMonthStart = systemDefaultTimeDateUtil.getMonthStartTimestamp(timestamp);
+    final Long timestampMonthEnd = systemDefaultTimeDateUtil.getMonthEndTimestamp(timestamp);
+    final List<WebappDaily> webappDailyPeriod = webappDailyRepository.findByTimestampBetweenOrderByTimestampAsc(timestampMonthStart, timestampMonthEnd);
+
+    return getEveryDayUsersCount(webappDailyPeriod, timestampMonthStart, timestampMonthEnd);
+  }
+
   private List<Long> getEveryDayUsersCount(List<WebappDaily> webappDailyPeriod, Long startTimestamp, Long endTimestamp) {
     final LocalDate startDate = systemDefaultTimeDateUtil.getDate(startTimestamp);
     final LocalDate endDate = systemDefaultTimeDateUtil.getDate(endTimestamp);
