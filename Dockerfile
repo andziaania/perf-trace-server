@@ -1,6 +1,9 @@
+# Alpine Linux with OpenJDK JRE
 FROM maven:3.6.1-jdk-8-alpine
 
 MAINTAINER Anna Pawelczyk
+
+RUN apk update
 
 WORKDIR /app
 
