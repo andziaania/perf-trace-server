@@ -5,6 +5,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
 
@@ -15,8 +16,8 @@ import java.time.LocalDateTime;
 @Entity
 public class Webapp {
   @Id
-  @GeneratedValue
-  private long id;
+  @GeneratedValue(strategy= GenerationType.IDENTITY)
+  private Long id;
 
   @Column(unique = true)
   private String url;
@@ -30,7 +31,7 @@ public class Webapp {
     this.url = url;
   }
 
-  public long getId() {
+  public Long getId() {
     return id;
   }
 
@@ -39,7 +40,7 @@ public class Webapp {
     if (!this.getClass().equals(other.getClass())) return false;
     Webapp otherWebapp = (Webapp) other;
     return this.url.equals(otherWebapp.url)
-            && this.id == otherWebapp.id;
+            && this.id.equals(otherWebapp.id);
   }
 
   public String getUrl() {
