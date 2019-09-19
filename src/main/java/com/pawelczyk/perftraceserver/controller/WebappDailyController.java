@@ -3,7 +3,6 @@ package com.pawelczyk.perftraceserver.controller;
 import com.pawelczyk.perftraceserver.model.WebappDaily;
 import com.pawelczyk.perftraceserver.repository.WebappDailyRepository;
 import com.pawelczyk.perftraceserver.utils.SystemDefaultTimeDateUtil;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +23,6 @@ import java.util.stream.Collectors;
  * @since 08.09.2019.
  */
 @RestController
-@CrossOrigin("http://localhost:4200") //4200
 @RequestMapping("/api/users")
 public class WebappDailyController {
 

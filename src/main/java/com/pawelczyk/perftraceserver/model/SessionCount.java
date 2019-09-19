@@ -1,6 +1,7 @@
 package com.pawelczyk.perftraceserver.model;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -14,19 +15,25 @@ import javax.persistence.OneToOne;
 public class SessionCount {
 
   @Id
-  @GeneratedValue(strategy= GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @OneToOne
-  Webapp webapp;
+  @OneToOne(fetch=FetchType.LAZY)
+  private Webapp webapp;
 
-  Long count;
+  private Long count;
+
+  /**
+   * informs how many of the count are returning users
+   */
+  private Long returningCount;
 
   public SessionCount() { }
 
-  public SessionCount(Webapp webapp, Long count) {
+  public SessionCount(Webapp webapp, Long count, Long returningCount) {
     this.webapp = webapp;
     this.count = count;
+    this.returningCount = returningCount;
   }
 
   public Long getCount() {
@@ -35,5 +42,13 @@ public class SessionCount {
 
   public void setCount(Long count) {
     this.count = count;
+  }
+
+  public Long getReturningCount() {
+    return returningCount;
+  }
+
+  public void setReturningCount(Long returningCount) {
+    this.returningCount = returningCount;
   }
 }
