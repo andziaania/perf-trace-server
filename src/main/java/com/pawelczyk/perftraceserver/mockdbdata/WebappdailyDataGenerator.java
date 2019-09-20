@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Component
 public class WebappdailyDataGenerator {
 
-  private final long MAX_USERS_NUMBER = 10;
+  private final long MAX_USERS_NUMBER = 3;
   private final long DAYS = 100;
 
   private WebappDailyRepository webappDailyRepository;
