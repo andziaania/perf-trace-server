@@ -1,8 +1,8 @@
 package com.pawelczyk.perftraceserver.controller.api.recorder;
 
-import com.pawelczyk.perftraceserver.model.SessionCount;
+import com.pawelczyk.perftraceserver.model.Session;
 import com.pawelczyk.perftraceserver.model.Webapp;
-import com.pawelczyk.perftraceserver.repository.SessionCountRepository;
+import com.pawelczyk.perftraceserver.repository.SessionRepository;
 import com.pawelczyk.perftraceserver.repository.WebappRepository;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,14 +30,16 @@ public class RecorderController {
 
   private static final String SESSION_COOKIE_NAME = "pt_session";
 
+  final int SESSION_COOKIE_MAX_AGE_SEC = 60;
+
   private Logger log = LoggerFactory.getLogger(RecorderController.class);
 
-  private SessionCountRepository sessionCountRepository;
+  private SessionRepository sessionRepository;
 
   private WebappRepository webappRepository;
 
-  RecorderController(SessionCountRepository sessionCountRepository, WebappRepository webappRepository) {
-    this.sessionCountRepository = sessionCountRepository;
+  RecorderController(SessionRepository sessionRepository, WebappRepository webappRepository) {
+    this.sessionRepository = sessionRepository;
     this.webappRepository = webappRepository;
   }
 
@@ -68,29 +70,28 @@ public class RecorderController {
 
   @PostMapping("/initializeSession")
   public void initializeSession(
-          @CookieValue(value = USER_COOKIE_NAME, required = false) boolean userId,
+          @CookieValue(value = USER_COOKIE_NAME, required = false) boolean isReturning,
           @CookieValue(value = SESSION_COOKIE_NAME, required = false) boolean isSession,
           HttpServletRequest request,
           HttpServletResponse response) {
 
-    final int SESSION_COOKIE_MAX_AGE_SEC = 60;
-
-    if (!userId && isSession) {
+    if (!isReturning && isSession) {
       log.error("Something went wrong: there is a session cookie, but no user cookie");
     }
 
-    Webapp webapp = getOrCreateWebapp(request.getServerName());
-
+    // Handle session
     if (!isSession) {
-      incrementSessionCount(webapp, userId);
-      log.info("Session cookie added for " + request.getServerName());
+      Webapp webapp = getOrCreateWebapp(request.getServerName());
+      sessionRepository.save(new Session(webapp, isReturning));
+      log.info("Session added for " + request.getServerName());
     }
 
+    // Manage cookies
     Cookie sessionCookie = (isSession) ? WebUtils.getCookie(request, SESSION_COOKIE_NAME) : new Cookie(SESSION_COOKIE_NAME, String.valueOf(true));
     sessionCookie.setMaxAge(SESSION_COOKIE_MAX_AGE_SEC);
     response.addCookie(sessionCookie);
 
-    if (!userId) {
+    if (!isReturning) {
       Cookie userCookie = new Cookie(USER_COOKIE_NAME, String.valueOf(true));
       response.addCookie(userCookie);
     }
@@ -98,25 +99,7 @@ public class RecorderController {
 
   private Webapp getOrCreateWebapp(String serverName) {
     Optional<Webapp> webappOpt = webappRepository.findByUrl(serverName);
-    return webappOpt.orElseGet(() -> createWebapp(serverName));
+    return webappOpt.orElseGet(() -> webappRepository.save(new Webapp(serverName)));
   }
 
-  private void incrementSessionCount(Webapp webapp, boolean isReturningUser) {
-    Optional<SessionCount> sessionCountOpt = sessionCountRepository.findByWebapp(webapp);
-    long returningCount = isReturningUser ? 1L : 0L;
-    SessionCount sessionCount = sessionCountOpt.isPresent() ?
-            getIncreasedSessionCount(sessionCountOpt.get(), returningCount) : new SessionCount(webapp, 1L, returningCount);
-    sessionCountRepository.save(sessionCount);
-  }
-
-  private SessionCount getIncreasedSessionCount(SessionCount sessionCount, long returningCount) {
-    sessionCount.setCount(sessionCount.getCount() + 1);
-    sessionCount.setReturningCount(sessionCount.getReturningCount() + returningCount);
-    return sessionCount;
-  }
-
-  private Webapp createWebapp(String url) {
-    Webapp webapp = new Webapp(url);
-    return webappRepository.save(webapp);
-  }
 }

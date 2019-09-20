@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Component
 public class WebappdailyDataGenerator {
 
-  private final long MAX_USERS_NUMBER = 1000;
+  private final long MAX_USERS_NUMBER = 10;
   private final long DAYS = 100;
 
   private WebappDailyRepository webappDailyRepository;
@@ -33,11 +33,11 @@ public class WebappdailyDataGenerator {
    */
   @PostConstruct
   public void genetate() {
-    LocalDate today = LocalDate.now();
+    LocalDate twoDaysAgo = LocalDate.now().minusDays(2);
 
     for (int i = 0; i < DAYS; i++) {
 
-      LocalDate date = today.minusDays(i);
+      LocalDate date = twoDaysAgo.minusDays(i);
       long timestamp = Timestamp.valueOf(date.atStartOfDay()).getTime();
 
       List<Long> hours =  Arrays.stream(new Long[24])

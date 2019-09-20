@@ -20,7 +20,7 @@ public class WebappDailyTest {
   @Test
   public void constructor_setUsersNumber() {
     List<Long> usersNumberHourly = Arrays.asList(2L, 44L, 15L);
-    long usersNumber = 2 + 44 + 15;
+    Long usersNumber = 2L + 44 + 15;
 
     WebappDaily webappDaily = new WebappDaily(anyTimestamp, usersNumberHourly);
     assertEquals(webappDaily.getUsersNumber(), usersNumber);
@@ -29,9 +29,10 @@ public class WebappDailyTest {
   @Test
   public void constructor_whenEmptyUsersNumberListPassed_usersNumberisZero() {
     List<Long> usersNumberHourly = Collections.emptyList();
+    Long noUsers = 0L;
 
     WebappDaily webappDaily = new WebappDaily(anyTimestamp, usersNumberHourly);
-    assertEquals(webappDaily.getUsersNumber(), 0);
+    assertEquals(webappDaily.getUsersNumber(), noUsers);
   }
 
   @Test(expected = IllegalArgumentException.class)

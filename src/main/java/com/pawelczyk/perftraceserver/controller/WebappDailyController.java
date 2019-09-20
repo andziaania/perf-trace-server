@@ -37,7 +37,8 @@ public class WebappDailyController {
 
   @GetMapping("/total/day/{timestamp}")
   public List<Long> getTotalWabappUsersHourly(@PathVariable Long timestamp) {
-    final Optional<WebappDaily> webappDailyOpt = webappDailyRepository.findByTimestamp(timestamp);
+    Long startDayTimestamp = systemDefaultTimeDateUtil.getStartDayTimestamp(timestamp);
+    final Optional<WebappDaily> webappDailyOpt = webappDailyRepository.findByTimestamp(startDayTimestamp);
     if (!webappDailyOpt.isPresent()) {
       return Collections.nCopies(24, 0L);
     }

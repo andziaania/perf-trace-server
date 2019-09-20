@@ -28,9 +28,11 @@ public class WebappDaily {
   @Convert(converter = TimestampToDateConverter.class)
   private Long date;
 
-  protected Long timestamp;
+  private Long timestamp;
 
-  private long usersNumber;
+  private Long usersNumber;
+
+  private Long returningUsersNumber;
 
   @Convert(converter = UsersNumberHourlyConverter.class)
   private List<Long> usersNumberHourly;
@@ -44,22 +46,32 @@ public class WebappDaily {
     setUsersNumber(usersNumberHourly);
   }
 
-  private void setUsersNumber(@NotNull List<Long> usersNumberHourly) {
+  // Sums the hours
+  public void setUsersNumber(@NotNull List<Long> usersNumberHourly) {
     if (usersNumberHourly == null) throw new IllegalArgumentException("usersNumberHourly parameter cannot be null");
     this.usersNumber = (usersNumberHourly.size() != 0) ?
             usersNumberHourly.stream().reduce((a, b) -> a + b).get()
-            : 0;
+            : 0L;
   }
 
   public List<Long> getUsersNumberHourly() {
     return usersNumberHourly;
   }
 
-  public long getUsersNumber() {
+  public Long getUsersNumber() {
     return usersNumber;
   }
 
   public Long getTimestamp() {
     return timestamp;
+  }
+
+  @Convert(converter = UsersNumberHourlyConverter.class)
+  public void setUsersNumberHourly(List<Long> usersNumberHourly) {
+    this.usersNumberHourly = usersNumberHourly;
+  }
+
+  public void setReturningUsersNumber(Long returningUsersNumber) {
+    this.returningUsersNumber = returningUsersNumber;
   }
 }

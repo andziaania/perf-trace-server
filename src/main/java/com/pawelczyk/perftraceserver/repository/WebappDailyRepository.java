@@ -11,6 +11,7 @@ import java.util.Optional;
  * @since 08.09.2019.
  */
 public interface WebappDailyRepository extends JpaRepository<WebappDaily, Long> {
+
   Optional<WebappDaily> findByTimestamp(Long timestamp);
 
   List<WebappDaily> findByTimestampBetweenOrderByTimestampAsc(Long timestampStart, Long timestampEnd);

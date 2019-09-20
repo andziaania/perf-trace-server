@@ -67,7 +67,7 @@ public class SystemDefaultTimeDateUtil {
     return zdt.toLocalDate();
   }
 
-  private Long getStartOfDayTimestamp(LocalDate date) {
+  public Long getStartOfDayTimestamp(LocalDate date) {
     return  date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
   }
 
