@@ -4,7 +4,7 @@ import com.pawelczyk.perftraceserver.model.Session;
 import com.pawelczyk.perftraceserver.model.WebappDaily;
 import com.pawelczyk.perftraceserver.repository.SessionRepository;
 import com.pawelczyk.perftraceserver.repository.WebappDailyRepository;
-import com.pawelczyk.perftraceserver.utils.SystemDefaultTimeDateUtil;
+import com.pawelczyk.perftraceserver.utils.TimeDateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
@@ -35,12 +35,12 @@ public class SessionsMigrationScheduler {
 
   private WebappDailyRepository webappDailyRepository;
 
-  private SystemDefaultTimeDateUtil systemDefaultTimeDateUtil;
+  private TimeDateUtil timeDateUtil;
 
-  SessionsMigrationScheduler(SessionRepository sessionRepository, WebappDailyRepository webappDailyRepository, SystemDefaultTimeDateUtil systemDefaultTimeDateUtil) {
+  SessionsMigrationScheduler(SessionRepository sessionRepository, WebappDailyRepository webappDailyRepository, TimeDateUtil timeDateUtil) {
     this.sessionRepository = sessionRepository;
     this.webappDailyRepository = webappDailyRepository;
-    this.systemDefaultTimeDateUtil = systemDefaultTimeDateUtil;
+    this.timeDateUtil = timeDateUtil;
   }
 
   private final static int MINUTE = 1000 * 60;
@@ -62,7 +62,7 @@ public class SessionsMigrationScheduler {
       Long returningUsersNumber = 0L;
       for (Session session : sessionList) {
         // increment usersNumberHourly at the hour index
-        int hour = session.getTimestamp().getHour();
+        int hour = session.getDateTime().getHour();
         usersNumberHourly.set(hour, usersNumberHourly.get(hour) + 1L);
         // if user is of the returning type, increment counter
         returningUsersNumber += session.getIsReturning() ? 1L : 0L;
@@ -73,7 +73,7 @@ public class SessionsMigrationScheduler {
       webappDaily.setReturningUsersNumber(returningUsersNumber);
 
       webappDailyRepository.save(webappDaily);
-      log.info("Scheduler saved % %", webappDaily.getTimestamp(), webappDaily.getUsersNumber());
+      log.info("Scheduler saved % %", webappDaily.getDate(), webappDaily.getUsersNumber());
     });
 
   }
@@ -89,7 +89,7 @@ public class SessionsMigrationScheduler {
   private Map<LocalDate, List<Session>> mapSessionsByDate(List<Session> allSessions) {
     Map<LocalDate, List<Session>> dateSessionMap = new HashMap<>();
     allSessions.forEach(session -> {
-      LocalDate date = session.getTimestamp().toLocalDate();
+      LocalDate date = session.getDateTime().toLocalDate();
       if (!dateSessionMap.containsKey(date)) {
         dateSessionMap.put(date, new ArrayList<>());
       }
@@ -99,9 +99,8 @@ public class SessionsMigrationScheduler {
   }
 
   private WebappDaily getWebappDailyFromDBOrCreate(LocalDate date) {
-    Long startOfDayTimestamp = systemDefaultTimeDateUtil.getStartOfDayTimestamp(date);
-    Optional<WebappDaily> webappDailyOpt = webappDailyRepository.findByTimestamp(startOfDayTimestamp);
-    return webappDailyOpt.orElseGet(() -> new WebappDaily(startOfDayTimestamp, createHoursEmptyList()));
+    Optional<WebappDaily> webappDailyOpt = webappDailyRepository.findByDate(date);
+    return webappDailyOpt.orElseGet(() -> new WebappDaily(date, createHoursEmptyList()));
   }
 
   private List<Long> createHoursEmptyList() {

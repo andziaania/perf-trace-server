@@ -25,7 +25,7 @@ public class Session {
   private Webapp webapp;
 
   @UpdateTimestamp
-  private LocalDateTime timestamp;
+  private LocalDateTime dateTime;
 
   private boolean isReturning;
 
@@ -48,7 +48,7 @@ public class Session {
     return webapp;
   }
 
-  public LocalDateTime getTimestamp() {
-    return timestamp;
+  public LocalDateTime getDateTime() {
+    return dateTime;
   }
 }

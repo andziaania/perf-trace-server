@@ -1,6 +1,7 @@
 package com.pawelczyk.perftraceserver.repository;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -33,13 +34,13 @@ public class WebappDailyRepositoryTest {
   @Autowired
   private WebappDailyRepository webappDailyRepository;
 
-  private final Long anyTimestamp = new Timestamp(System.currentTimeMillis()).getTime();
+  private final LocalDate anyDate = LocalDate.now();
 
   @Test
   public void persist() {
     List<Long> hours = Arrays.asList(1L,2L,3L,4L,5L,6L,7L,8L,8L,10L,1L,2L,3L,4L,5L,6L,7L,8L,8L,20L,21L,22L,23L,24L);
 
-    WebappDaily webappDaily = new WebappDaily(anyTimestamp, hours);
+    WebappDaily webappDaily = new WebappDaily(anyDate, hours);
     entityManager.persist(webappDaily);
 
     WebappDaily webappDailyFromDB = webappDailyRepository.findAll().get(0);
@@ -51,30 +52,30 @@ public class WebappDailyRepositoryTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void persist_whenHoursListIsNull_IllegalArgumentExceptio() {
-    WebappDaily webappDaily = new WebappDaily(anyTimestamp, null);
+    WebappDaily webappDaily = new WebappDaily(anyDate, null);
     entityManager.persist(webappDaily);
   }
 
 
   @Test
   public void saveAndGetWebappDaily_returnsCorrectAddedEntityProperties() {
-    Long timestamp = 1568066400000L; // 2019-09-10
+    LocalDate date = LocalDate.of(2019,9,10);
 
     // save
-    WebappDaily webappDaily = createEntity(timestamp);
+    WebappDaily webappDaily = createEntity(date);
     webappDailyRepository.save(webappDaily);
 
     // read
-    Optional<WebappDaily> byTimestampOpt = webappDailyRepository.findByTimestamp(timestamp);
+    Optional<WebappDaily> byTimestampOpt = webappDailyRepository.findByDate(date);
 
     assertTrue(byTimestampOpt.isPresent());
 //    assertEquals(byTimestampOpt.get().timestamp, timestamp);
   }
 
-  private WebappDaily createEntity(Long timestamp) {
+  private WebappDaily createEntity(LocalDate date) {
     List<Long> hours =  Arrays.stream(new Long[24])
             .map(zero -> (long) (Math.random() * 1000))
             .collect(Collectors.toList());
-    return new WebappDaily(timestamp, hours);
+    return new WebappDaily(date, hours);
   }
 }

@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -63,24 +64,24 @@ public class WebappDailyControllerTest {
 
   @Test
   public void saveAndGetWebappDaily_returnsAddedEntity() throws Exception {
-    Long timestamp = 1568066400000L; // 2019-09-10
+    LocalDate date = LocalDate.of(2019, 9, 10);
 
     // save
-    WebappDaily webappDaily = createEntity(timestamp);
+    WebappDaily webappDaily = createEntity(date);
     webappDailyRepository.save(webappDaily);
 
     // read
-    this.mockMvc.perform(get("/api/users/total/day/" + timestamp))
+    this.mockMvc.perform(get("/api/users/total/day/?date=" + date))
             .andExpect(status().isOk())
             .andExpect(content().contentType(CONTENT_TYPE))
             .andExpect(jsonPath("$", not(empty())))
             .andExpect(jsonPath("$[0]", is(webappDaily.getUsersNumberHourly().get(0).intValue())));
   }
 
-  private WebappDaily createEntity(Long timestamp) {
+  private WebappDaily createEntity(LocalDate date) {
     List<Long> hours =  Arrays.stream(new Long[24])
             .map(zero -> (long) (Math.random() * 1000))
             .collect(Collectors.toList());
-    return new WebappDaily(timestamp, hours);
+    return new WebappDaily(date, hours);
   }
 }

@@ -38,12 +38,11 @@ public class WebappdailyDataGenerator {
     for (int i = 0; i < DAYS; i++) {
 
       LocalDate date = twoDaysAgo.minusDays(i);
-      long timestamp = Timestamp.valueOf(date.atStartOfDay()).getTime();
 
       List<Long> hours =  Arrays.stream(new Long[24])
               .map(zero -> (long) (Math.random() * MAX_USERS_NUMBER))
               .collect(Collectors.toList());
-      WebappDaily webappDaily = new WebappDaily(timestamp, hours);
+      WebappDaily webappDaily = new WebappDaily(date, hours);
       webappDailyRepository.save(webappDaily);
     }
   }

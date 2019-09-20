@@ -2,7 +2,7 @@ package com.pawelczyk.perftraceserver.model;
 
 import org.junit.Test;
 
-import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -15,14 +15,14 @@ import static org.junit.Assert.*;
  */
 public class WebappDailyTest {
 
-  private final Long anyTimestamp = new Timestamp(System.currentTimeMillis()).getTime();
+  private final LocalDate anyDate = LocalDate.now();
 
   @Test
   public void constructor_setUsersNumber() {
     List<Long> usersNumberHourly = Arrays.asList(2L, 44L, 15L);
     Long usersNumber = 2L + 44 + 15;
 
-    WebappDaily webappDaily = new WebappDaily(anyTimestamp, usersNumberHourly);
+    WebappDaily webappDaily = new WebappDaily(anyDate, usersNumberHourly);
     assertEquals(webappDaily.getUsersNumber(), usersNumber);
   }
 
@@ -31,13 +31,13 @@ public class WebappDailyTest {
     List<Long> usersNumberHourly = Collections.emptyList();
     Long noUsers = 0L;
 
-    WebappDaily webappDaily = new WebappDaily(anyTimestamp, usersNumberHourly);
+    WebappDaily webappDaily = new WebappDaily(anyDate, usersNumberHourly);
     assertEquals(webappDaily.getUsersNumber(), noUsers);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void constructor_whenNullUsersNumberListPassed_throwsException() {
-    new WebappDaily(anyTimestamp, null);
+    new WebappDaily(anyDate, null);
   }
 
   @Test()

@@ -1,6 +1,5 @@
 package com.pawelczyk.perftraceserver.model;
 
-import com.pawelczyk.perftraceserver.converter.TimestampToDateConverter;
 import com.pawelczyk.perftraceserver.converter.UsersNumberHourlyConverter;
 
 import javax.persistence.Convert;
@@ -10,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -25,10 +25,7 @@ public class WebappDaily {
   @ManyToOne
   private Webapp webapp;
 
-  @Convert(converter = TimestampToDateConverter.class)
-  private Long date;
-
-  private Long timestamp;
+  private LocalDate date;
 
   private Long usersNumber;
 
@@ -39,9 +36,8 @@ public class WebappDaily {
 
   public WebappDaily() { }
 
-  public WebappDaily(Long timestamp, @NotNull List<Long> usersNumberHourly) {
-    this.timestamp = timestamp;
-    this.date = timestamp;
+  public WebappDaily(@NotNull LocalDate date, @NotNull List<Long> usersNumberHourly) {
+    this.date = date;
     this.usersNumberHourly = usersNumberHourly;
     setUsersNumber(usersNumberHourly);
   }
@@ -58,17 +54,12 @@ public class WebappDaily {
     return usersNumberHourly;
   }
 
+  public LocalDate getDate() {
+    return date;
+  }
+
   public Long getUsersNumber() {
     return usersNumber;
-  }
-
-  public Long getTimestamp() {
-    return timestamp;
-  }
-
-  @Convert(converter = UsersNumberHourlyConverter.class)
-  public void setUsersNumberHourly(List<Long> usersNumberHourly) {
-    this.usersNumberHourly = usersNumberHourly;
   }
 
   public void setReturningUsersNumber(Long returningUsersNumber) {

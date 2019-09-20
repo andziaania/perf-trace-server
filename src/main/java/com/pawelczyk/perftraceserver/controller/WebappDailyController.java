@@ -2,10 +2,14 @@ package com.pawelczyk.perftraceserver.controller;
 
 import com.pawelczyk.perftraceserver.model.WebappDaily;
 import com.pawelczyk.perftraceserver.repository.WebappDailyRepository;
-import com.pawelczyk.perftraceserver.utils.SystemDefaultTimeDateUtil;
+import com.pawelczyk.perftraceserver.utils.TimeDateUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
@@ -26,46 +30,45 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/users")
 public class WebappDailyController {
 
+  Logger log = LoggerFactory.getLogger(WebappDailyController.class);
+
   private WebappDailyRepository webappDailyRepository;
 
-  private SystemDefaultTimeDateUtil systemDefaultTimeDateUtil;
+  private TimeDateUtil timeDateUtil;
 
-  WebappDailyController(WebappDailyRepository webappDailyRepository, SystemDefaultTimeDateUtil systemDefaultTimeDateUtil) {
+  WebappDailyController(WebappDailyRepository webappDailyRepository, TimeDateUtil timeDateUtil) {
     this.webappDailyRepository = webappDailyRepository;
-    this.systemDefaultTimeDateUtil = systemDefaultTimeDateUtil;
+    this.timeDateUtil = timeDateUtil;
   }
 
-  @GetMapping("/total/day/{timestamp}")
-  public List<Long> getTotalWabappUsersHourly(@PathVariable Long timestamp) {
-    Long startDayTimestamp = systemDefaultTimeDateUtil.getStartDayTimestamp(timestamp);
-    final Optional<WebappDaily> webappDailyOpt = webappDailyRepository.findByTimestamp(startDayTimestamp);
+  @GetMapping("/total/day")
+  public List<Long> getTotalWabappUsersHourly(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate date) {
+    final Optional<WebappDaily> webappDailyOpt = webappDailyRepository.findByDate(date);
     if (!webappDailyOpt.isPresent()) {
       return Collections.nCopies(24, 0L);
     }
     return webappDailyOpt.get().getUsersNumberHourly();
   }
 
-  @GetMapping("/total/week/{timestamp}")
-  public List<Long> getTotalWabappUsersWeekly(@PathVariable Long timestamp) {
-    final Long timestampWeekStart = systemDefaultTimeDateUtil.getWeekStartTimestamp(timestamp);
-    final Long timestampWeekEnd = systemDefaultTimeDateUtil.getWeekEndTimestamp(timestamp);
-    final List<WebappDaily> webappDailyPeriod = webappDailyRepository.findByTimestampBetweenOrderByTimestampAsc(timestampWeekStart, timestampWeekEnd);
+  @GetMapping("/total/week")
+  public List<Long> getTotalWabappUsersWeekly(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate date) {
+    final LocalDate weekStartDate = timeDateUtil.getWeekStartDate(date);
+    final LocalDate weekEndDate = timeDateUtil.getWeekEndDate(date);
+    final List<WebappDaily> webappDailyPeriod = webappDailyRepository.findByDateBetweenOrderByDateAsc(weekStartDate, weekEndDate);
 
-    return getEveryDayUsersCount(webappDailyPeriod, timestampWeekStart, timestampWeekEnd);
+    return getEveryDayUsersCount(webappDailyPeriod, weekStartDate, weekEndDate);
   }
 
-  @GetMapping("/total/month/{timestamp}")
-  public List<Long> getTotalWabappUsersMonthly(@PathVariable Long timestamp) {
-    final Long timestampMonthStart = systemDefaultTimeDateUtil.getMonthStartTimestamp(timestamp);
-    final Long timestampMonthEnd = systemDefaultTimeDateUtil.getMonthEndTimestamp(timestamp);
-    final List<WebappDaily> webappDailyPeriod = webappDailyRepository.findByTimestampBetweenOrderByTimestampAsc(timestampMonthStart, timestampMonthEnd);
+  @GetMapping("/total/month")
+  public List<Long> getTotalWabappUsersMonthly(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate date) {
+    final LocalDate monthStartDate = timeDateUtil.getMonthStartDate(date);
+    final LocalDate monthEndDate = timeDateUtil.getMonthEndDate(date);
+    final List<WebappDaily> webappDailyPeriod = webappDailyRepository.findByDateBetweenOrderByDateAsc(monthStartDate, monthEndDate);
 
-    return getEveryDayUsersCount(webappDailyPeriod, timestampMonthStart, timestampMonthEnd);
+    return getEveryDayUsersCount(webappDailyPeriod, monthStartDate, monthEndDate);
   }
 
-  private List<Long> getEveryDayUsersCount(List<WebappDaily> webappDailyPeriod, Long startTimestamp, Long endTimestamp) {
-    final LocalDate startDate = systemDefaultTimeDateUtil.getDate(startTimestamp);
-    final LocalDate endDate = systemDefaultTimeDateUtil.getDate(endTimestamp);
+  private List<Long> getEveryDayUsersCount(List<WebappDaily> webappDailyPeriod, LocalDate startDate, LocalDate endDate) {
     final int ONE_DAY = 1;
     final Long NO_USERS = 0L;
 
@@ -75,7 +78,7 @@ public class WebappDailyController {
     WebappDaily webappDaily = iterator.hasNext() ?  iterator.next() : new WebappDaily();
 
     for (LocalDate date = startDate; date.isBefore(endDate) || date.isEqual(endDate); date = date.plusDays(ONE_DAY)) {
-      if (date.isEqual(systemDefaultTimeDateUtil.getDate(webappDaily.getTimestamp()))) {
+      if (date.isEqual(webappDaily.getDate())) {
         usersEveryDayCount.add(webappDaily.getUsersNumber());
         webappDaily = iterator.hasNext() ?  iterator.next() : webappDaily;
       } else {

@@ -3,6 +3,7 @@ package com.pawelczyk.perftraceserver.repository;
 import com.pawelczyk.perftraceserver.model.WebappDaily;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,7 +13,7 @@ import java.util.Optional;
  */
 public interface WebappDailyRepository extends JpaRepository<WebappDaily, Long> {
 
-  Optional<WebappDaily> findByTimestamp(Long timestamp);
+  Optional<WebappDaily> findByDate(LocalDate date);
 
-  List<WebappDaily> findByTimestampBetweenOrderByTimestampAsc(Long timestampStart, Long timestampEnd);
+  List<WebappDaily> findByDateBetweenOrderByDateAsc(LocalDate dateStart, LocalDate dateEnd);
 }
