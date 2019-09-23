@@ -19,7 +19,7 @@ public class UsersNumberHourlyConverter implements AttributeConverter< List<Long
   @Override
   public String convertToDatabaseColumn( List<Long> hours) throws IllegalArgumentException {
     if (hours == null || hours.size() != 24) {
-      throw new IllegalArgumentException("Array of hours must be of length 24, but is " + ((hours == null) ? "null" : hours.size() ));
+      throw new IllegalArgumentException("Array of hours must be of length 24, but is " + ((hours == null) ? "null" : hours.size()));
     }
 
     List<String> usersNumberHourly = hours.stream()

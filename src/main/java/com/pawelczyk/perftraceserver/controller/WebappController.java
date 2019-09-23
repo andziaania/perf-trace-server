@@ -29,7 +29,7 @@ public class WebappController {
   @ResponseStatus(HttpStatus.CREATED)
   public void addWebapp(@RequestBody Webapp webapp) {
     if(webapp.getUrl() == null || webapp.getUrl().trim().isEmpty()) {
-      throw new WrongParameterException("Passing incorrect argument: " + webapp +". Expecting: " + Webapp.class);
+      throw new WrongParameterException("Passing incorrect argument: " + webapp + ". Expecting: " + Webapp.class);
     }
     webappRepository.save(webapp);
   }

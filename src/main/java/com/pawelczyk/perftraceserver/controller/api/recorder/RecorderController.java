@@ -5,7 +5,6 @@ import com.pawelczyk.perftraceserver.model.Webapp;
 import com.pawelczyk.perftraceserver.repository.SessionRepository;
 import com.pawelczyk.perftraceserver.repository.WebappRepository;
 import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,31 +42,6 @@ public class RecorderController {
     this.webappRepository = webappRepository;
   }
 
-
-  /**
-   * -The web app must be in the DB
-   * -If there is no APPLICATION_ID_COOKIE in the request, it is set in the response.
-   * -If there is no SESSION_ID_COOKIE in the request, it is set in the response.
-   */
-  @GetMapping("/initializeSession444")
-  public void initializeSession2() {
-//    Cookie[] cookies = request.getCookies();
-//    Optional<String> webappId = Arrays.stream(cookies)
-//            .filter(cookie -> cookie.getName().equals(APPLICATION_ID_COOKIE_NAME))
-//            .map(cookie -> cookie.getValue())
-//            .findAny();
-//    Optional<String> sessionId = Arrays.stream(cookies)
-//            .filter(cookie -> cookie.getName().equals(SESSION_ID_COOKIE_NAME))
-//            .map(cookie -> cookie.getValue())
-//            .findAny();
-//
-//    UserOnWebapp userOnWebapp = userOnWebappRegister
-//            .initializeSession(webappId, sessionId, request.getHeader("origin"), ajaxRequestUrl);
-//
-//    response.addCookie(new Cookie(APPLICATION_ID_COOKIE_NAME, userOnWebapp.getWebapp().getId().toString()));
-//    response.addCookie(new Cookie(SESSION_ID_COOKIE_NAME, String.valueOf(userOnWebapp.getId())));
-  }
-
   @PostMapping("/initializeSession")
   public void initializeSession(
           @CookieValue(value = USER_COOKIE_NAME, required = false) boolean isReturning,
@@ -101,5 +75,4 @@ public class RecorderController {
     Optional<Webapp> webappOpt = webappRepository.findByUrl(serverName);
     return webappOpt.orElseGet(() -> webappRepository.save(new Webapp(serverName)));
   }
-
 }

@@ -33,7 +33,7 @@ public class WebappdailyDataGenerator {
    */
   @PostConstruct
   public void genetate() {
-    LocalDate twoDaysAgo = LocalDate.now().minusDays(2);
+    LocalDate twoDaysAgo = LocalDate.now().minusDays(1);
 
     for (int i = 0; i < DAYS; i++) {
 
