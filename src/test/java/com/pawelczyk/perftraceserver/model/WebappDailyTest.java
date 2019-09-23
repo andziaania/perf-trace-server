@@ -22,7 +22,7 @@ public class WebappDailyTest {
     List<Long> usersNumberHourly = Arrays.asList(2L, 44L, 15L);
     Long usersNumber = 2L + 44 + 15;
 
-    WebappDaily webappDaily = new WebappDaily(anyDate, usersNumberHourly);
+    WebappDaily webappDaily = new WebappDaily(anyDate, usersNumberHourly, usersNumberHourly);
     assertEquals(webappDaily.getUsersNumber(), usersNumber);
   }
 
@@ -31,13 +31,13 @@ public class WebappDailyTest {
     List<Long> usersNumberHourly = Collections.emptyList();
     Long noUsers = 0L;
 
-    WebappDaily webappDaily = new WebappDaily(anyDate, usersNumberHourly);
+    WebappDaily webappDaily = new WebappDaily(anyDate, usersNumberHourly, usersNumberHourly);
     assertEquals(webappDaily.getUsersNumber(), noUsers);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void constructor_whenNullUsersNumberListPassed_throwsException() {
-    new WebappDaily(anyDate, null);
+    new WebappDaily(anyDate, null, null);
   }
 
   @Test()

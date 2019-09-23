@@ -40,7 +40,7 @@ public class WebappDailyRepositoryTest {
   public void persist() {
     List<Long> hours = Arrays.asList(1L,2L,3L,4L,5L,6L,7L,8L,8L,10L,1L,2L,3L,4L,5L,6L,7L,8L,8L,20L,21L,22L,23L,24L);
 
-    WebappDaily webappDaily = new WebappDaily(anyDate, hours);
+    WebappDaily webappDaily = new WebappDaily(anyDate, hours, hours);
     entityManager.persist(webappDaily);
 
     WebappDaily webappDailyFromDB = webappDailyRepository.findAll().get(0);
@@ -52,7 +52,8 @@ public class WebappDailyRepositoryTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void persist_whenHoursListIsNull_IllegalArgumentExceptio() {
-    WebappDaily webappDaily = new WebappDaily(anyDate, null);
+    List<Long> hours = Arrays.asList(1L,2L,3L,4L,5L,6L,7L,8L,8L,10L,1L,2L,3L,4L,5L,6L,7L,8L,8L,20L,21L,22L,23L,24L);
+    WebappDaily webappDaily = new WebappDaily(anyDate, null, hours);
     entityManager.persist(webappDaily);
   }
 
@@ -76,6 +77,6 @@ public class WebappDailyRepositoryTest {
     List<Long> hours =  Arrays.stream(new Long[24])
             .map(zero -> (long) (Math.random() * 1000))
             .collect(Collectors.toList());
-    return new WebappDaily(date, hours);
+    return new WebappDaily(date, hours, hours);
   }
 }

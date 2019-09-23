@@ -11,15 +11,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 /**
  * @author ania.pawelczyk
@@ -35,11 +33,17 @@ public class WebappDailyController {
 
   private TimeDateUtil timeDateUtil;
 
+  private Function<WebappDaily, Long> getUsersNumberFormWebappDailyFun = WebappDaily::getUsersNumber;
+
+  private Function<WebappDaily, Long> getReturningUsersNumberFormWebappDailyFun = WebappDaily::getReturningUsersNumber;
+
+
   WebappDailyController(WebappDailyRepository webappDailyRepository, TimeDateUtil timeDateUtil) {
     this.webappDailyRepository = webappDailyRepository;
     this.timeDateUtil = timeDateUtil;
   }
 
+  /***** Total users count methods ****/
   @GetMapping("/total/day")
   public List<Long> getTotalWabappUsersHourly(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate date) {
     final Optional<WebappDaily> webappDailyOpt = webappDailyRepository.findByDate(date);
@@ -55,7 +59,7 @@ public class WebappDailyController {
     final LocalDate weekEndDate = timeDateUtil.getWeekEndDate(date);
     final List<WebappDaily> webappDailyPeriod = webappDailyRepository.findByDateBetweenOrderByDateAsc(weekStartDate, weekEndDate);
 
-    return getEveryDayUsersCount(webappDailyPeriod, weekStartDate, weekEndDate);
+    return getEveryDayUsersCount(webappDailyPeriod, weekStartDate, weekEndDate, getUsersNumberFormWebappDailyFun);
   }
 
   @GetMapping("/total/month")
@@ -64,10 +68,39 @@ public class WebappDailyController {
     final LocalDate monthEndDate = timeDateUtil.getMonthEndDate(date);
     final List<WebappDaily> webappDailyPeriod = webappDailyRepository.findByDateBetweenOrderByDateAsc(monthStartDate, monthEndDate);
 
-    return getEveryDayUsersCount(webappDailyPeriod, monthStartDate, monthEndDate);
+    return getEveryDayUsersCount(webappDailyPeriod, monthStartDate, monthEndDate, getUsersNumberFormWebappDailyFun);
   }
 
-  private List<Long> getEveryDayUsersCount(List<WebappDaily> webappDailyPeriod, LocalDate startDate, LocalDate endDate) {
+  /***** Returning users count methods ****/
+  @GetMapping("/returning/day")
+  public List<Long> getReturningWabappUsersHourly(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate date) {
+    final Optional<WebappDaily> webappDailyOpt = webappDailyRepository.findByDate(date);
+    if (!webappDailyOpt.isPresent()) {
+      return Collections.nCopies(24, 0L);
+    }
+    return webappDailyOpt.get().getReturningUsersNumberHourly();
+  }
+
+  @GetMapping("/returning/week")
+  public List<Long> getReturningWabappUsersWeekly(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate date) {
+    final LocalDate weekStartDate = timeDateUtil.getWeekStartDate(date);
+    final LocalDate weekEndDate = timeDateUtil.getWeekEndDate(date);
+    final List<WebappDaily> webappDailyPeriod = webappDailyRepository.findByDateBetweenOrderByDateAsc(weekStartDate, weekEndDate);
+
+    return getEveryDayUsersCount(webappDailyPeriod, weekStartDate, weekEndDate, getReturningUsersNumberFormWebappDailyFun);
+  }
+
+  @GetMapping("/returning/month")
+  public List<Long> getReturningWabappUsersMonthly(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate date) {
+    final LocalDate monthStartDate = timeDateUtil.getMonthStartDate(date);
+    final LocalDate monthEndDate = timeDateUtil.getMonthEndDate(date);
+    final List<WebappDaily> webappDailyPeriod = webappDailyRepository.findByDateBetweenOrderByDateAsc(monthStartDate, monthEndDate);
+
+    return getEveryDayUsersCount(webappDailyPeriod, monthStartDate, monthEndDate, getReturningUsersNumberFormWebappDailyFun);
+  }
+
+
+  private List<Long> getEveryDayUsersCount(List<WebappDaily> webappDailyPeriod, LocalDate startDate, LocalDate endDate, Function<WebappDaily, Long> countFunction) {
     final int ONE_DAY = 1;
     final Long NO_USERS = 0L;
 
@@ -78,7 +111,8 @@ public class WebappDailyController {
 
     for (LocalDate date = startDate; date.isBefore(endDate) || date.isEqual(endDate); date = date.plusDays(ONE_DAY)) {
       if (date.isEqual(webappDaily.getDate())) {
-        usersEveryDayCount.add(webappDaily.getUsersNumber());
+        Long count = countFunction.apply(webappDaily);
+        usersEveryDayCount.add(count);
         webappDaily = iterator.hasNext() ?  iterator.next() : webappDaily;
       } else {
         usersEveryDayCount.add(NO_USERS);

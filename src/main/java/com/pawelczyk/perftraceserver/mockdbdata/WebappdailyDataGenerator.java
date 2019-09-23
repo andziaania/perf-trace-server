@@ -42,7 +42,12 @@ public class WebappdailyDataGenerator {
       List<Long> hours =  Arrays.stream(new Long[24])
               .map(zero -> (long) (Math.random() * MAX_USERS_NUMBER))
               .collect(Collectors.toList());
-      WebappDaily webappDaily = new WebappDaily(date, hours);
+
+      List<Long> hoursForReturning =  hours.stream()
+              .map(hour -> (long) (Math.random() * hour))
+              .collect(Collectors.toList());
+
+      WebappDaily webappDaily = new WebappDaily(date, hours, hoursForReturning);
       webappDailyRepository.save(webappDaily);
     }
   }

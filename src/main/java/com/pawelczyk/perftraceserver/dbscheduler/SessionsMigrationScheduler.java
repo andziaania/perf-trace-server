@@ -59,18 +59,18 @@ public class SessionsMigrationScheduler {
       WebappDaily webappDaily = getWebappDailyFromDBOrCreate(date);
 
       ArrayList<Long> usersNumberHourly = (ArrayList<Long>)(webappDaily.getUsersNumberHourly());
-      Long returningUsersNumber = 0L;
+      ArrayList<Long> returningUsersNumberHourly = (ArrayList<Long>)(webappDaily.getUsersNumberHourly());
       for (Session session : sessionList) {
         // increment usersNumberHourly at the hour index
         int hour = session.getDateTime().getHour();
-        usersNumberHourly.set(hour, usersNumberHourly.get(hour) + 1L);
+        usersNumberHourly.set(hour, usersNumberHourly.get(hour) + 1);
         // if user is of the returning type, increment counter
-        returningUsersNumber += session.getIsReturning() ? 1L : 0L;
+        returningUsersNumberHourly.set(hour, returningUsersNumberHourly.get(hour) + 1);
       }
       // Required as there is new value needed for webappDaily.usersNumber. The webappDaily.usersNumberHourly updates
       // by reference to the object.
       webappDaily.setUsersNumber(usersNumberHourly);
-      webappDaily.setReturningUsersNumber(returningUsersNumber);
+      webappDaily.setReturningUsersNumber(returningUsersNumberHourly);
 
       webappDailyRepository.save(webappDaily);
       log.info("Scheduler saved % %", webappDaily.getDate(), webappDaily.getUsersNumber());
@@ -100,7 +100,7 @@ public class SessionsMigrationScheduler {
 
   private WebappDaily getWebappDailyFromDBOrCreate(LocalDate date) {
     Optional<WebappDaily> webappDailyOpt = webappDailyRepository.findByDate(date);
-    return webappDailyOpt.orElseGet(() -> new WebappDaily(date, createHoursEmptyList()));
+    return webappDailyOpt.orElseGet(() -> new WebappDaily(date, createHoursEmptyList(), createHoursEmptyList()));
   }
 
   private List<Long> createHoursEmptyList() {

@@ -29,7 +29,7 @@ public class RecorderController {
 
   private static final String SESSION_COOKIE_NAME = "pt_session";
 
-  final int SESSION_COOKIE_MAX_AGE_SEC = 60;
+  private final int SESSION_COOKIE_MAX_AGE_SEC = 60 * 3;
 
   private Logger log = LoggerFactory.getLogger(RecorderController.class);
 

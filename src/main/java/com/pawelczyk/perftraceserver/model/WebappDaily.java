@@ -29,29 +29,48 @@ public class WebappDaily {
 
   private Long usersNumber;
 
-  private Long returningUsersNumber;
-
   @Convert(converter = UsersNumberHourlyConverter.class)
   private List<Long> usersNumberHourly;
 
+  private Long returningUsersNumber;
+
+  @Convert(converter = UsersNumberHourlyConverter.class)
+  private List<Long> returningUsersNumberHourly;
+
   public WebappDaily() { }
 
-  public WebappDaily(@NotNull LocalDate date, @NotNull List<Long> usersNumberHourly) {
+  public WebappDaily(@NotNull LocalDate date, @NotNull List<Long> usersNumberHourly, @NotNull List<Long> returningUsersNumberHourly) {
     this.date = date;
     this.usersNumberHourly = usersNumberHourly;
     setUsersNumber(usersNumberHourly);
+    this.returningUsersNumberHourly = returningUsersNumberHourly;
+    setReturningUsersNumber(returningUsersNumberHourly);
   }
 
   // Sums the hours
   public void setUsersNumber(@NotNull List<Long> usersNumberHourly) {
     if (usersNumberHourly == null) throw new IllegalArgumentException("usersNumberHourly parameter cannot be null");
-    this.usersNumber = (usersNumberHourly.size() != 0) ?
-            usersNumberHourly.stream().reduce((a, b) -> a + b).get()
-            : 0L;
+    this.usersNumber = getSumOfElements(usersNumberHourly);
   }
 
   public List<Long> getUsersNumberHourly() {
     return usersNumberHourly;
+  }
+
+  // Sums the hours
+  public void setReturningUsersNumber(@NotNull List<Long> returningUsersNumberHourly) {
+    if (returningUsersNumberHourly == null) throw new IllegalArgumentException("usersNumberHourly parameter cannot be null");
+    this.returningUsersNumber = getSumOfElements(returningUsersNumberHourly);
+  }
+
+  private Long getSumOfElements(@NotNull List<Long> elements) {
+    return (elements.size() != 0) ?
+            elements.stream().reduce((a, b) -> a + b).get()
+            : 0L;
+  }
+
+  public List<Long> getReturningUsersNumberHourly() {
+    return returningUsersNumberHourly;
   }
 
   public LocalDate getDate() {
@@ -62,7 +81,7 @@ public class WebappDaily {
     return usersNumber;
   }
 
-  public void setReturningUsersNumber(Long returningUsersNumber) {
-    this.returningUsersNumber = returningUsersNumber;
+  public Long getReturningUsersNumber() {
+    return returningUsersNumber;
   }
 }

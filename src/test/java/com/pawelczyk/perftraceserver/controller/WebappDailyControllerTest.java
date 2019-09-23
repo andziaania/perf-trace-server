@@ -54,7 +54,7 @@ public class WebappDailyControllerTest {
 
   @Test
   public void getWebappDaily_withNoEntitiesAdded_returnsListOfZero() throws Exception {
-    this.mockMvc.perform(get("/api/users/total/day/1568152800000"))
+    this.mockMvc.perform(get("/api/users/total/day?date=2000-10-31T01:30:00.000-05:00"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(CONTENT_TYPE))
             .andExpect(jsonPath("$", not(empty())))
@@ -71,7 +71,7 @@ public class WebappDailyControllerTest {
     webappDailyRepository.save(webappDaily);
 
     // read
-    this.mockMvc.perform(get("/api/users/total/day/?date=" + date))
+    this.mockMvc.perform(get("/api/users/total/day?date=" + "2019-09-10T01:30:00.000-05:00"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(CONTENT_TYPE))
             .andExpect(jsonPath("$", not(empty())))
@@ -82,6 +82,6 @@ public class WebappDailyControllerTest {
     List<Long> hours =  Arrays.stream(new Long[24])
             .map(zero -> (long) (Math.random() * 1000))
             .collect(Collectors.toList());
-    return new WebappDaily(date, hours);
+    return new WebappDaily(date, hours, hours);
   }
 }
