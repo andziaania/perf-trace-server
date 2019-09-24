@@ -2,10 +2,13 @@ package com.pawelczyk.perftraceserver.controller.api.recorder;
 
 import com.pawelczyk.perftraceserver.model.Session;
 import com.pawelczyk.perftraceserver.model.Webapp;
+import com.pawelczyk.perftraceserver.model.WebappLoadingTime;
 import com.pawelczyk.perftraceserver.repository.SessionRepository;
+import com.pawelczyk.perftraceserver.repository.WebappLoadingTimeRepository;
 import com.pawelczyk.perftraceserver.repository.WebappRepository;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.slf4j.Logger;
@@ -15,6 +18,7 @@ import org.springframework.web.util.WebUtils;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -37,9 +41,12 @@ public class RecorderController {
 
   private WebappRepository webappRepository;
 
-  RecorderController(SessionRepository sessionRepository, WebappRepository webappRepository) {
+  private WebappLoadingTimeRepository webappLoadingTimeRepository;
+
+  RecorderController(SessionRepository sessionRepository, WebappRepository webappRepository, WebappLoadingTimeRepository webappLoadingTimeRepository) {
     this.sessionRepository = sessionRepository;
     this.webappRepository = webappRepository;
+    this.webappLoadingTimeRepository = webappLoadingTimeRepository;
   }
 
   @PostMapping("/initializeSession")
@@ -75,4 +82,15 @@ public class RecorderController {
     Optional<Webapp> webappOpt = webappRepository.findByUrl(serverName);
     return webappOpt.orElseGet(() -> webappRepository.save(new Webapp(serverName)));
   }
+
+  @PostMapping("/pageLoadingPerformance")
+  public void savePageLoadingPerformance(
+          @CookieValue(value = USER_COOKIE_NAME, required = false) boolean isReturning,
+          @CookieValue(value = SESSION_COOKIE_NAME, required = false) boolean isSession,
+          @RequestBody Map<String, Object> statistics) {
+    Long loadingTime = ((Double) statistics.get("loadingTime")).longValue();
+    WebappLoadingTime webappLoadingTime = new WebappLoadingTime(loadingTime);
+    webappLoadingTimeRepository.save(webappLoadingTime);
+  }
+
 }

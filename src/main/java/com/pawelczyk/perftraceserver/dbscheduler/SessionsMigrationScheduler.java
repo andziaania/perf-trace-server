@@ -73,7 +73,7 @@ public class SessionsMigrationScheduler {
       webappDaily.setReturningUsersNumber(returningUsersNumberHourly);
 
       webappDailyRepository.save(webappDaily);
-      log.info("Scheduler saved % %", webappDaily.getDate(), webappDaily.getUsersNumber());
+      log.info("Scheduler saved {} {}", webappDaily.getDate(), webappDaily.getUsersNumber());
     });
 
   }
