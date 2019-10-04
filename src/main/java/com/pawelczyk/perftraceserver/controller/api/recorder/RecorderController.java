@@ -3,8 +3,10 @@ package com.pawelczyk.perftraceserver.controller.api.recorder;
 import com.pawelczyk.perftraceserver.model.Session;
 import com.pawelczyk.perftraceserver.model.Webapp;
 import com.pawelczyk.perftraceserver.model.WebappLoadingTime;
+import com.pawelczyk.perftraceserver.model.WebappPath;
 import com.pawelczyk.perftraceserver.repository.SessionRepository;
 import com.pawelczyk.perftraceserver.repository.WebappLoadingTimeRepository;
+import com.pawelczyk.perftraceserver.repository.WebappPathRepository;
 import com.pawelczyk.perftraceserver.repository.WebappRepository;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,10 +45,17 @@ public class RecorderController {
 
   private WebappLoadingTimeRepository webappLoadingTimeRepository;
 
-  RecorderController(SessionRepository sessionRepository, WebappRepository webappRepository, WebappLoadingTimeRepository webappLoadingTimeRepository) {
+  private WebappPathRepository webappPathRepository;
+
+
+  RecorderController(SessionRepository sessionRepository,
+                     WebappRepository webappRepository,
+                     WebappLoadingTimeRepository webappLoadingTimeRepository,
+                     WebappPathRepository webappPathRepository) {
     this.sessionRepository = sessionRepository;
     this.webappRepository = webappRepository;
     this.webappLoadingTimeRepository = webappLoadingTimeRepository;
+    this.webappPathRepository = webappPathRepository;
   }
 
   @PostMapping("/initializeSession")
@@ -84,13 +93,17 @@ public class RecorderController {
   }
 
   @PostMapping("/pageLoadingPerformance")
-  public void savePageLoadingPerformance(
-          @CookieValue(value = USER_COOKIE_NAME, required = false) boolean isReturning,
-          @CookieValue(value = SESSION_COOKIE_NAME, required = false) boolean isSession,
-          @RequestBody Map<String, Object> statistics) {
+  public void savePageLoadingPerformance(@RequestBody Map<String, Object> statistics) {
     Long loadingTime = ((Double) statistics.get("loadingTime")).longValue();
     WebappLoadingTime webappLoadingTime = new WebappLoadingTime(loadingTime);
     webappLoadingTimeRepository.save(webappLoadingTime);
   }
 
+  @PostMapping("/urlPath")
+  public void saveUrlPath(@RequestBody Map<String, String> pathParams) {
+    String path = pathParams.get("path");
+    WebappPath webappPath = webappPathRepository.findByPath(path).orElse(new WebappPath(path));
+    webappPath.setCounter(webappPath.getCounter() + 1);
+    webappPathRepository.save(webappPath);
+  }
 }
