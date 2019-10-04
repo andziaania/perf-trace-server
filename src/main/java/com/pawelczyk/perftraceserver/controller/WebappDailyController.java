@@ -107,10 +107,10 @@ public class WebappDailyController {
     final List<Long> usersEveryDayCount = new ArrayList<>();
 
     Iterator<WebappDaily> iterator = webappDailyPeriod.iterator();
-    WebappDaily webappDaily = iterator.hasNext() ?  iterator.next() : new WebappDaily();
+    WebappDaily webappDaily = iterator.hasNext() ?  iterator.next() : null;
 
     for (LocalDate date = startDate; date.isBefore(endDate) || date.isEqual(endDate); date = date.plusDays(ONE_DAY)) {
-      if (date.isEqual(webappDaily.getDate())) {
+      if (webappDaily != null && date.isEqual(webappDaily.getDate())) {
         Long count = countFunction.apply(webappDaily);
         usersEveryDayCount.add(count);
         webappDaily = iterator.hasNext() ?  iterator.next() : webappDaily;
