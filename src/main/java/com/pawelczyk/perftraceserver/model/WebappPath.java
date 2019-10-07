@@ -24,6 +24,7 @@ public class WebappPath {
 
   @Column(unique = true)
   private String path;
+
   private Long counter;
 
   public WebappPath() { }
@@ -39,6 +40,14 @@ public class WebappPath {
 
   public void setCounter(Long counter) {
     this.counter = counter;
+  }
+
+  public LocalDateTime getDateTime() {
+    return dateTime;
+  }
+
+  public String getPath() {
+    return path;
   }
 
 }

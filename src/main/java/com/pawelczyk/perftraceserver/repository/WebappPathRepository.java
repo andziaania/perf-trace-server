@@ -3,6 +3,7 @@ package com.pawelczyk.perftraceserver.repository;
 import com.pawelczyk.perftraceserver.model.WebappPath;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -12,5 +13,7 @@ import java.util.Optional;
 public interface WebappPathRepository extends JpaRepository<WebappPath, Long> {
 
   Optional<WebappPath> findByPath(String path);
+
+  List<WebappPath> findByOrderByCounterDesc();
 
 }
