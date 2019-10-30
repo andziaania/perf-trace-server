@@ -59,7 +59,7 @@ public class SessionsMigrationScheduler {
       WebappDaily webappDaily = getWebappDailyFromDBOrCreate(date);
 
       ArrayList<Long> usersNumberHourly = (ArrayList<Long>)(webappDaily.getUsersNumberHourly());
-      ArrayList<Long> returningUsersNumberHourly = (ArrayList<Long>)(webappDaily.getUsersNumberHourly());
+      ArrayList<Long> returningUsersNumberHourly = (ArrayList<Long>)(webappDaily.getReturningUsersNumberHourly());
       for (Session session : sessionList) {
         // increment usersNumberHourly at the hour index
         int hour = session.getDateTime().getHour();
