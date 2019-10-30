@@ -1,4 +1,4 @@
-package com.pawelczyk.perftraceserver.controller;
+package com.pawelczyk.perftraceserver.controller.getter;
 
 import com.pawelczyk.perftraceserver.model.WebappPath;
 import com.pawelczyk.perftraceserver.repository.WebappPathRepository;

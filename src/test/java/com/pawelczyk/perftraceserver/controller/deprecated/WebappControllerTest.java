@@ -1,4 +1,4 @@
-package com.pawelczyk.perftraceserver.controller;
+package com.pawelczyk.perftraceserver.controller.deprecated;
 
 import com.pawelczyk.perftraceserver.repository.WebappRepository;
 import org.junit.Before;

@@ -1,10 +1,9 @@
-package com.pawelczyk.perftraceserver.controller;
+package com.pawelczyk.perftraceserver.controller.deprecated;
 
-import com.pawelczyk.perftraceserver.controller.exception.WrongParameterException;
+import com.pawelczyk.perftraceserver.controller.deprecated.exception.WrongParameterException;
 import com.pawelczyk.perftraceserver.model.Webapp;
 import com.pawelczyk.perftraceserver.repository.WebappRepository;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

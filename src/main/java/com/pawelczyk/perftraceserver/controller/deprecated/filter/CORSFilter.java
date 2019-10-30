@@ -1,4 +1,4 @@
-package com.pawelczyk.perftraceserver.controller.filter;
+package com.pawelczyk.perftraceserver.controller.deprecated.filter;
 
 import java.io.IOException;
 import javax.servlet.Filter;

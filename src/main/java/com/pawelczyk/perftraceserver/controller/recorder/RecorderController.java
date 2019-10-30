@@ -1,4 +1,4 @@
-package com.pawelczyk.perftraceserver.controller.api.recorder;
+package com.pawelczyk.perftraceserver.controller.recorder;
 
 import com.pawelczyk.perftraceserver.model.Session;
 import com.pawelczyk.perftraceserver.model.Webapp;
@@ -8,6 +8,7 @@ import com.pawelczyk.perftraceserver.repository.SessionRepository;
 import com.pawelczyk.perftraceserver.repository.WebappLoadingTimeRepository;
 import com.pawelczyk.perftraceserver.repository.WebappPathRepository;
 import com.pawelczyk.perftraceserver.repository.WebappRepository;
+import com.pawelczyk.perftraceserver.service.RecorderService;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,15 +48,19 @@ public class RecorderController {
 
   private WebappPathRepository webappPathRepository;
 
+  private RecorderService recorderService;
+
 
   RecorderController(SessionRepository sessionRepository,
                      WebappRepository webappRepository,
                      WebappLoadingTimeRepository webappLoadingTimeRepository,
-                     WebappPathRepository webappPathRepository) {
+                     WebappPathRepository webappPathRepository,
+                     RecorderService recorderService) {
     this.sessionRepository = sessionRepository;
     this.webappRepository = webappRepository;
     this.webappLoadingTimeRepository = webappLoadingTimeRepository;
     this.webappPathRepository = webappPathRepository;
+    this.recorderService = recorderService;
   }
 
   @PostMapping("/initializeSession")
@@ -103,7 +108,8 @@ public class RecorderController {
   public void saveUrlPath(@RequestBody Map<String, String> pathParams) {
     String path = pathParams.get("path");
     WebappPath webappPath = webappPathRepository.findByPath(path).orElse(new WebappPath(path));
-    webappPath.setCounter(webappPath.getCounter() + 1);
+    recorderService.incrementWebappPathCounter(webappPath);
     webappPathRepository.save(webappPath);
   }
+
 }
